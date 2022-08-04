@@ -10,31 +10,54 @@ function getArg($opt, $sKey, $lKey, $default = null)
     return $default;
 }
 
+$scriptName = $argv[0];
+function usage()
+{
+    global $scriptName;
+    echo "Usage:
+    php $scriptName [OPTIONS] youtube_link
+    OPTION:
+        -i, --info only display info no download
+        -d, --dir directory to save video
+        -t, --type media type eg. mp4 or mp3
+        -r, --res resolution eg. 1080
+        -h, --help to show this help
+Examples:
+    php $scriptName https://www.youtube.com/watch?v=Q9OPOe_OO94  
+    php $scriptName -d d:\\videos -t mp4 -r 1080 https://www.youtube.com/watch?v=Q9OPOe_OO94\n";
+}
+
 $type = 'mp4';
 $resolution = '1080';
 $dir = '.';
 $onlyInfo = false;
 $lastInd = 0;
-$opt = getopt('r:d:t:i', ['res:', 'dir:', 'type:', 'info'], $lastInd);
-$link = null;
-if ($opt !== false) {
-    $link = $argv[$lastInd];
+$opt = getopt('r:d:t:ih', ['res:', 'dir:', 'type:', 'info', 'help'], $lastInd);
 
-    if (isset($opt['i']) || isset($opt['info'])) {
-        $onlyInfo = true;
-    } else {
-        $type = getArg($opt, 't', 'type', 'mp4');
-        // print_r($type);
-        $resolution = getArg($opt, 'r', 'res', 0);
-        // print_r($resolution);
-        $dir = getArg($opt, 'd', 'dir', '.');
-        // print_r($dir);
-    }
-
+if ($argc < 2 || getArg($opt, 'h', 'help') !== null) {
+    usage();
+    exit;
 }
 
+if (getArg($opt, 'i', 'info') !== null) {
+    $onlyInfo = true;
+} else {
+    $type = getArg($opt, 't', 'type', 'mp4');
+    if ($type != 'mp4' && $type != 'mp3') exit('only mp4 and mp3 type are supported');
+
+    $resolution = getArg($opt, 'r', 'res', 0);
+    if (!preg_match('/[0-9]+/', $resolution)) exit("$resolution is invalid resolution integer required");
+
+    $dir = getArg($opt, 'd', 'dir', '.');
+    if (!is_dir($dir)) exit("directory: '$dir' is invalid ");
+}
+if ($lastInd === $argc) {
+    exit('youtube link is required');
+}
+
+$link = $argv[$lastInd];
 if (null === $link) {
-    die('link is required');
+    exit('youtube link is required');
 }
 
 $ydown = new YdownClass($link);
