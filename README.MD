@@ -32,7 +32,7 @@ To use this in your code include the `YdownClass.php`:
 - You can also get the video download link after retrieving the video info `getDownloadLink($id, $videoID, $type, $resolution)`
   the `getVideoInfo()` returns values contains `$id` and `videoID`
 
-```injectablephp
+```php
 require_once 'YdownClass.php'
 
 $ydown = new YdownClass('https://www.youtube.com/watch?v=Q9OPOe_OO94');
@@ -46,10 +46,11 @@ if($videoInfo!=false){
  echo "something bad happened code=".$errorCode;
 }
 ```
+
 - To download the video use  `download($directory,$type,$resolution);` or to download to the current directory at the highest
 resolution available use `download()` with no argument.
 
-```injectablephp
+```php
 require_once 'YdownClass.php'
 
 $ydown = new YdownClass('');
